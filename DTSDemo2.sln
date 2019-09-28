@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTSDemo2", "DTSDemo2\DTSDemo2.csproj", "{E411E5C4-7F70-4A07-AB29-00935C489716}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E411E5C4-7F70-4A07-AB29-00935C489716}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E411E5C4-7F70-4A07-AB29-00935C489716}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E411E5C4-7F70-4A07-AB29-00935C489716}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E411E5C4-7F70-4A07-AB29-00935C489716}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {040DF786-6E2A-45F1-8F7B-6266DF6DED96}
+	EndGlobalSection
+EndGlobal
