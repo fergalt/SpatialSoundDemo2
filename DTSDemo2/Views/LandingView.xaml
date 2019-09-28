@@ -1,25 +1,38 @@
-﻿<Page x:Class="DTSDemo2.LandingView"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:DTSDemo2"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="LandingView">
-
-
+﻿<UserControl x:Class="DTSDemo2.Views.LandingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DTSDemo2.Views"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
         <DockPanel DockPanel.Dock="Top">
             <Border>
-                <Label>Top</Label>
+                <StackPanel>
+                    <Label>Top</Label>
+                    <TextBlock Text="{Binding X}"></TextBlock>
+                    <TextBlock Text="{Binding Y}"></TextBlock>
+                    <TextBlock Text="{Binding Z}"></TextBlock>
+                </StackPanel>
             </Border>
         </DockPanel>
         <StackPanel Orientation="Horizontal">
-            <Canvas Width="300" Height="300">
-                <TextBlock Text="{Binding YPos}"></TextBlock>
+            <Canvas x:Name="Canvas" Width="300" Height="300" Background="DarkGray">
+                <Grid Width="300" Height="300">
+                    <Rectangle x:Name="Listener" Width="40" Height="20" Stroke="White" StrokeThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    </Rectangle>
+                </Grid>
+                <Ellipse x:Name="Emitter" Width="20" Height="20" Fill="White">
+                    <i:Interaction.Behaviors>
+                        <ei:MouseDragElementBehavior ConstrainToParentBounds="true" Dragging="MouseDragElementBehavior_Dragging"/>
+                    </i:Interaction.Behaviors>
+                </Ellipse>
+
             </Canvas>
-            <Slider TickFrequency=".1" TickPlacement="Both"  Minimum="-1.5" Maximum="1.5" Orientation="Vertical" Height="250"></Slider>
+            <Slider TickFrequency=".1" TickPlacement="Both"  Minimum="-1.5" Maximum="1.5" Orientation="Vertical" Height="250" Value="{Binding Z}"></Slider>
         </StackPanel>
     </DockPanel>
-</Page>
+</UserControl>
