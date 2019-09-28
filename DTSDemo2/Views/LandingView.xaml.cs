@@ -37,8 +37,9 @@ namespace DTSDemo2.Views
             z = 0;
         }
 
-
-
+        /// <summary>
+        /// X position in metres
+        /// </summary>
         public double X
         {
             get
@@ -52,6 +53,9 @@ namespace DTSDemo2.Views
             }
         }
 
+        /// <summary>
+        /// Y position in metres
+        /// </summary>
         public double Y
         {
             get
@@ -65,6 +69,9 @@ namespace DTSDemo2.Views
             }
         }
 
+        /// <summary>
+        /// Z position in metres
+        /// </summary>
         public double Z
         {
             get
@@ -78,8 +85,10 @@ namespace DTSDemo2.Views
             }
         }
 
-
-
+        /// <summary>
+        /// Adds changed property to the event handler
+        /// </summary>
+        /// <param name="name"></param>
         protected void OnPropertyChanged(string name)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
@@ -89,6 +98,11 @@ namespace DTSDemo2.Views
             }
         }
 
+        /// <summary>
+        /// Handles dragging of listener in view, updates XY metric values
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MouseDragElementBehavior_Dragging(object sender, MouseEventArgs e)
         {
             Point PxPosition = Emitter.TranslatePoint(new Point(Emitter.Width / 2 - Listener.Width / 2, Emitter.Height / 2 - Listener.Height / 2), Listener);
