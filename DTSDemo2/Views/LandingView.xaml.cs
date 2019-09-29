@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Windows.Media.Audio;
+
 
 namespace DTSDemo2.Views
 {
@@ -110,6 +112,7 @@ namespace DTSDemo2.Views
             X = MetricPosition.X;
             Y = MetricPosition.Y;
         }
-    }
 
+        private AudioGraph audioGraph;
+    }
 }
