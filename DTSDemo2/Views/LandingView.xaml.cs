@@ -14,7 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Windows.Media.Audio;
-
+using Windows.Media.Render;
+using Windows.Media.MediaProperties;
 
 namespace DTSDemo2.Views
 {
@@ -114,5 +115,20 @@ namespace DTSDemo2.Views
         }
 
         private AudioGraph audioGraph;
+
+        private async Task BuildAndStartAudioGraph()
+        {
+            AudioGraphSettings settings = new AudioGraphSettings(AudioRenderCategory.GameEffects);
+            settings.EncodingProperties = AudioEncodingProperties.CreatePcm(48000, 2, 32);
+            settings.EncodingProperties.Subtype = MediaEncodingSubtypes.Float;
+            settings.DesiredRenderDeviceAudioProcessing = Windows.Media.AudioProcessing.Raw;
+
+            CreateAudioGraphResult result = await AudioGraph.CreateAsync(settings);
+
+            if (result.Status == AudioGraphCreationStatus.Success)
+            {
+                //_graph = result.Graph;
+            }
+        }
     }
 }
