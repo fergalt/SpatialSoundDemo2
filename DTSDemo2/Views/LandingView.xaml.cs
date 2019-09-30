@@ -16,6 +16,10 @@ using System.Windows.Shapes;
 using Windows.Media.Audio;
 using Windows.Media.Render;
 using Windows.Media.MediaProperties;
+using System.Numerics;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using DTSDemo2.Interfaces;
 
 namespace DTSDemo2.Views
 {
@@ -98,6 +102,7 @@ namespace DTSDemo2.Views
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(name));
+                emitter.Position = new Vector3((float)X, (float)Z, (float)Y);
             }
         }
 
@@ -110,11 +115,15 @@ namespace DTSDemo2.Views
         {
             Point PxPosition = Emitter.TranslatePoint(new Point(Emitter.Width / 2 - Listener.Width / 2, Emitter.Height / 2 - Listener.Height / 2), Listener);
             Point MetricPosition = new Point(PxPosition.X / Canvas.Width, PxPosition.Y / Canvas.Height);
-            X = MetricPosition.X;
-            Y = MetricPosition.Y;
+            X = MetricPosition.X*3;
+            Y = MetricPosition.Y*3;
         }
 
-        private AudioGraph audioGraph;
+        private AudioDeviceOutputNode _deviceOutput;
+        private AudioGraph _graph;
+        private AudioFileInputNode _currentAudioFileInputNode = null;
+        private StorageFile soundFile;
+        private AudioNodeEmitter emitter = new AudioNodeEmitter(AudioNodeEmitterShape.CreateOmnidirectional(), AudioNodeEmitterDecayModel.CreateCustom(0.2, 1), AudioNodeEmitterSettings.None);
 
         private async Task BuildAndStartAudioGraph()
         {
@@ -127,8 +136,45 @@ namespace DTSDemo2.Views
 
             if (result.Status == AudioGraphCreationStatus.Success)
             {
-                //_graph = result.Graph;
+                _graph = result.Graph;
+                CreateAudioDeviceOutputNodeResult deviceResult = await _graph.CreateDeviceOutputNodeAsync();
+
+                if (deviceResult.Status == AudioDeviceNodeCreationStatus.Success)
+                {
+                    _deviceOutput = deviceResult.DeviceOutputNode;
+
+                    emitter.Position = new Vector3((float)X, (float)Y, (float)Z);
+
+                    CreateAudioFileInputNodeResult inCreateResult = await _graph.CreateFileInputNodeAsync(soundFile, emitter);
+
+                    _currentAudioFileInputNode = inCreateResult.FileInputNode;
+
+                    _currentAudioFileInputNode.AddOutgoingConnection(_deviceOutput);
+
+                    _graph.Start();
+                }
             }
+        }
+
+
+        private void stop_Click(object sender, RoutedEventArgs e)
+        {
+            _graph.Stop();
+        }
+
+        private async void start_Click(object sender, RoutedEventArgs e)
+        {
+
+
+            await BuildAndStartAudioGraph();
+        }
+
+        private async void load_Click(object sender, RoutedEventArgs e)
+        {
+            FileOpenPicker openPicker = new FileOpenPicker();
+            openPicker.FileTypeFilter.Add(".wav");
+            ((IInitializeWithWindow)(object)openPicker).Initialize(System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
+            soundFile = await openPicker.PickSingleFileAsync();
         }
     }
 }

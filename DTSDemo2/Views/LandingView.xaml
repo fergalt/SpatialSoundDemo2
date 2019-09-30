@@ -34,5 +34,9 @@
             </Canvas>
             <Slider TickFrequency=".1" TickPlacement="Both"  Minimum="-1.5" Maximum="1.5" Orientation="Vertical" Height="250" Value="{Binding Z}"></Slider>
         </StackPanel>
+        <Button Content="Start" Width="50"  Height="50" Click="start_Click" x:Name="start"></Button>
+        <Button Content="Stop" Width="50"  Height="50" Click="stop_Click" x:Name="stop"></Button>
+        <Button Content="Load" Width="50"  Height="50" Click="load_Click" x:Name="load"></Button>
+
     </DockPanel>
 </UserControl>
