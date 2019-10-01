@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<DrawingBrush x:Key="Person_TopDown" Stretch="Uniform">
+		<DrawingBrush.Drawing>
+			<DrawingGroup>
+				<DrawingGroup.Children>
+					<GeometryDrawing Brush="#FFFFFFFF" Geometry="F1 M 28.1669,31.8337L 71.8332,31.8337C 81.8664,31.8337 90,39.9672 90,50.0004L 90,50.0004C 90,60.0337 81.8664,68.1672 71.8332,68.1672L 28.1669,68.1672C 18.1337,68.1672 10.0001,60.0337 10.0001,50.0004L 10.0001,50.0004C 10.0001,39.9672 18.1337,31.8337 28.1669,31.8337 Z ">
+						<GeometryDrawing.Pen>
+							<Pen LineJoin="Round" Brush="#FF000000"/>
+						</GeometryDrawing.Pen>
+					</GeometryDrawing>
+					<GeometryDrawing Brush="#FFFFFFFF" Geometry="F1 M 54.6737,26.463C 65.7733,28.726 74,38.4025 74,50.0004C 74,63.2553 63.2549,74.0005 50,74.0005C 36.7452,74.0005 26.0001,63.2553 26.0001,50.0004C 26.0001,38.4131 34.2119,28.7436 45.1188,26.4974C 46.8312,26.0838 48.2232,24.5396 49.8907,24.5396C 51.5475,24.5396 52.5,26.0292 54.6737,26.463 Z ">
+						<GeometryDrawing.Pen>
+							<Pen LineJoin="Round" Brush="#FF000000"/>
+						</GeometryDrawing.Pen>
+					</GeometryDrawing>
+				</DrawingGroup.Children>
+			</DrawingGroup>
+		</DrawingBrush.Drawing>
+	</DrawingBrush>
+</ResourceDictionary>

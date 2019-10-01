@@ -103,6 +103,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Resources\Images\Person-TopDown.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\LandingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -137,6 +141,8 @@
   <ItemGroup>
     <Content Include="Resources\Audio\africa-toto.wav" />
     <Content Include="Resources\Audio\africa-toto_48k.wav" />
+    <Resource Include="Resources\Images\dts-negative_1.eps_.jpg" />
+    <Resource Include="Resources\Images\hpx-2-negative.png" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
