@@ -25,7 +25,7 @@
                     <Rectangle x:Name="Listener" Width="40" Height="20" Stroke="White" StrokeThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center">
                     </Rectangle>
                 </Grid>
-                <Ellipse x:Name="Emitter" Width="20" Height="20" Fill="White">
+                <Ellipse x:Name="Emitter" Width="20" Height="20" Fill="White" Canvas.Left="140" Canvas.Top="30">
                     <i:Interaction.Behaviors>
                         <ei:MouseDragElementBehavior ConstrainToParentBounds="true" Dragging="MouseDragElementBehavior_Dragging"/>
                     </i:Interaction.Behaviors>
@@ -34,9 +34,9 @@
             </Canvas>
             <Slider TickFrequency=".1" TickPlacement="Both"  Minimum="-1.5" Maximum="1.5" Orientation="Vertical" Height="250" Value="{Binding Z}"></Slider>
         </StackPanel>
-        <Button Content="Start" Width="50"  Height="50" Click="start_Click" x:Name="start"></Button>
-        <Button Content="Stop" Width="50"  Height="50" Click="stop_Click" x:Name="stop"></Button>
-        <Button Content="Load" Width="50"  Height="50" Click="load_Click" x:Name="load"></Button>
+        <Button Content="Start" Width="50"  Height="50" Click="start_Click" x:Name="StartButton" IsEnabled="{Binding StartButtonEnabled}"></Button>
+        <Button Content="Stop" Width="50"  Height="50" Click="stop_Click" x:Name="StopButton" IsEnabled="{Binding StopButtonEnabled}"></Button>
+        <Button Content="Load" Width="50"  Height="50" Click="load_Click" x:Name="LoadButton" IsEnabled="True"></Button>
 
     </DockPanel>
 </UserControl>

@@ -35,6 +35,9 @@ namespace DTSDemo2.Views
         public double y;
         public double z;
 
+        public bool startButtonEnabled;
+        public bool stopButtonEnabled;
+
         public LandingView()
         {
             InitializeComponent();
@@ -42,6 +45,8 @@ namespace DTSDemo2.Views
             x = 0;
             y = 0;
             z = 0;
+            StartButtonEnabled = false;
+            StopButtonEnabled = false;
         }
 
         /// <summary>
@@ -93,6 +98,39 @@ namespace DTSDemo2.Views
         }
 
         /// <summary>
+        /// Start Button Enabled
+        /// </summary>
+        public bool StartButtonEnabled
+        {
+            get
+            {
+                return startButtonEnabled;
+            }
+            set
+            {
+                startButtonEnabled = value;
+                OnPropertyChanged("StartButtonEnabled");
+            }
+        }
+
+        /// <summary>
+        /// Stop Button Enabled
+        /// </summary>
+        public bool StopButtonEnabled
+        {
+            get
+            {
+                return stopButtonEnabled;
+            }
+            set
+            {
+                stopButtonEnabled = value;
+                OnPropertyChanged("StopButtonEnabled");
+            }
+        }
+
+
+        /// <summary>
         /// Adds changed property to the event handler
         /// </summary>
         /// <param name="name"></param>
@@ -119,13 +157,14 @@ namespace DTSDemo2.Views
             Y = MetricPosition.Y*3;
         }
 
-        private AudioDeviceOutputNode _deviceOutput;
-        private AudioGraph _graph;
-        private AudioFileInputNode _currentAudioFileInputNode = null;
+        private AudioDeviceOutputNode deviceOutput;
+        private AudioGraph graph;
+        private AudioFileInputNode currentAudioFileInputNode = null;
         private StorageFile soundFile;
-        private AudioNodeEmitter emitter = new AudioNodeEmitter(AudioNodeEmitterShape.CreateOmnidirectional(), AudioNodeEmitterDecayModel.CreateCustom(0.2, 1), AudioNodeEmitterSettings.None);
+        private AudioNodeEmitter emitter = new AudioNodeEmitter(AudioNodeEmitterShape.CreateOmnidirectional(), AudioNodeEmitterDecayModel.CreateCustom(0.1, 1), AudioNodeEmitterSettings.None);
 
-        private async Task BuildAndStartAudioGraph()
+
+        private async Task BuildAudioGraph()
         {
             AudioGraphSettings settings = new AudioGraphSettings(AudioRenderCategory.GameEffects);
             settings.EncodingProperties = AudioEncodingProperties.CreatePcm(48000, 2, 32);
@@ -134,40 +173,45 @@ namespace DTSDemo2.Views
 
             CreateAudioGraphResult result = await AudioGraph.CreateAsync(settings);
 
-            if (result.Status == AudioGraphCreationStatus.Success)
+            if (result.Status != AudioGraphCreationStatus.Success)
             {
-                _graph = result.Graph;
-                CreateAudioDeviceOutputNodeResult deviceResult = await _graph.CreateDeviceOutputNodeAsync();
-
-                if (deviceResult.Status == AudioDeviceNodeCreationStatus.Success)
-                {
-                    _deviceOutput = deviceResult.DeviceOutputNode;
-
-                    emitter.Position = new Vector3((float)X, (float)Y, (float)Z);
-
-                    CreateAudioFileInputNodeResult inCreateResult = await _graph.CreateFileInputNodeAsync(soundFile, emitter);
-
-                    _currentAudioFileInputNode = inCreateResult.FileInputNode;
-
-                    _currentAudioFileInputNode.AddOutgoingConnection(_deviceOutput);
-
-                    _graph.Start();
-                }
+                MessageBox.Show(String.Format("AudioGraph creation error: {0}", result.Status.ToString()), "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
+            graph = result.Graph;
+            CreateAudioDeviceOutputNodeResult deviceResult = await graph.CreateDeviceOutputNodeAsync();
+
+            if (deviceResult.Status != AudioDeviceNodeCreationStatus.Success)
+            {
+                MessageBox.Show(String.Format("Audio device error: {0}", deviceResult.Status.ToString()), "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            deviceOutput = deviceResult.DeviceOutputNode;
+            graph.UnrecoverableErrorOccurred += Graph_UnrecoverableErrorOccurred;
         }
 
+        private async void Graph_UnrecoverableErrorOccurred(AudioGraph sender, AudioGraphUnrecoverableErrorOccurredEventArgs args)
+        {
+            sender.Dispose();
+            StartButtonEnabled = false;
+            StopButtonEnabled = false;
+            await BuildAudioGraph();
+        }
 
         private void stop_Click(object sender, RoutedEventArgs e)
         {
-            _graph.Stop();
+            graph.Stop();
+            StartButtonEnabled = true;
+            StopButtonEnabled = false;
         }
 
-        private async void start_Click(object sender, RoutedEventArgs e)
+        private void start_Click(object sender, RoutedEventArgs e)
         {
-
-
-            await BuildAndStartAudioGraph();
+            graph.Start();
+            StartButtonEnabled = false;
+            StopButtonEnabled = true;
         }
+
 
         private async void load_Click(object sender, RoutedEventArgs e)
         {
@@ -175,6 +219,38 @@ namespace DTSDemo2.Views
             openPicker.FileTypeFilter.Add(".wav");
             ((IInitializeWithWindow)(object)openPicker).Initialize(System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
             soundFile = await openPicker.PickSingleFileAsync();
+
+            if (soundFile != null)
+            {
+                StartButtonEnabled = false;
+                StopButtonEnabled = false;
+
+                if (graph != null)
+                {
+                    graph.Stop();
+                }
+                else
+                {
+                    await BuildAudioGraph();
+                }
+                emitter.Position = new Vector3((float)X, (float)Y, (float)Z);
+
+                CreateAudioFileInputNodeResult inCreateResult = await graph.CreateFileInputNodeAsync(soundFile, emitter);
+                if (inCreateResult.Status != AudioFileNodeCreationStatus.Success)
+                {
+                    MessageBox.Show(String.Format("Audio file load error: {0}. {1}", inCreateResult.Status.ToString(), inCreateResult.ExtendedError.Message.ToString()), "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (currentAudioFileInputNode != null)
+                {
+                    currentAudioFileInputNode.Dispose();
+                }
+                currentAudioFileInputNode = inCreateResult.FileInputNode;
+                currentAudioFileInputNode.AddOutgoingConnection(deviceOutput);
+                StartButtonEnabled = true;
+            }
+
         }
     }
 }
