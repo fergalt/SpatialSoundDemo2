@@ -38,15 +38,22 @@ namespace DTSDemo2.Views
         public bool startButtonEnabled;
         public bool stopButtonEnabled;
 
+        private AudioDeviceOutputNode deviceOutput;
+        private AudioGraph graph;
+        private AudioFileInputNode currentAudioFileInputNode = null;
+        private StorageFile soundFile;
+        private AudioNodeEmitter emitter;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public LandingView()
         {
             InitializeComponent();
             this.DataContext = this;
-            x = 0;
-            y = 0;
-            z = 0;
             StartButtonEnabled = false;
             StopButtonEnabled = false;
+            UpdateXYPositions();
         }
 
         /// <summary>
@@ -98,7 +105,7 @@ namespace DTSDemo2.Views
         }
 
         /// <summary>
-        /// Start Button Enabled
+        /// Start Button Enabled flag
         /// </summary>
         public bool StartButtonEnabled
         {
@@ -114,7 +121,7 @@ namespace DTSDemo2.Views
         }
 
         /// <summary>
-        /// Stop Button Enabled
+        /// Stop Button Enabled flag
         /// </summary>
         public bool StopButtonEnabled
         {
@@ -140,30 +147,39 @@ namespace DTSDemo2.Views
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(name));
-                emitter.Position = new Vector3((float)X, (float)Z, (float)Y);
+                if (emitter != null)
+                {
+                    emitter.Position = new Vector3((float)X, (float)Z, (float)Y);
+                }
             }
         }
 
         /// <summary>
-        /// Handles dragging of listener in view, updates XY metric values
+        /// Handles dragging of listener in view
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void MouseDragElementBehavior_Dragging(object sender, MouseEventArgs e)
         {
-            Point PxPosition = Emitter.TranslatePoint(new Point(Emitter.Width / 2 - Listener.Width / 2, Emitter.Height / 2 - Listener.Height / 2), Listener);
-            Point MetricPosition = new Point(PxPosition.X / Canvas.Width, PxPosition.Y / Canvas.Height);
-            X = MetricPosition.X*3;
-            Y = MetricPosition.Y*3;
+            UpdateXYPositions();
         }
 
-        private AudioDeviceOutputNode deviceOutput;
-        private AudioGraph graph;
-        private AudioFileInputNode currentAudioFileInputNode = null;
-        private StorageFile soundFile;
-        private AudioNodeEmitter emitter = new AudioNodeEmitter(AudioNodeEmitterShape.CreateOmnidirectional(), AudioNodeEmitterDecayModel.CreateCustom(0.1, 1), AudioNodeEmitterSettings.None);
+        /// <summary>
+        /// Updates the XY metric values based on listener position in view
+        /// </summary>
+        private void UpdateXYPositions()
+        {
+            Point PxPosition = Emitter.TranslatePoint(new Point(Emitter.Width / 2 - Listener.Width / 2, Emitter.Height / 2 - Listener.Height / 2), Listener);
+            Point MetricPosition = new Point(PxPosition.X / Canvas.Width, PxPosition.Y / Canvas.Height);
+            X = MetricPosition.X * 3;
+            Y = MetricPosition.Y * 3;
+        }
 
 
+        /// <summary>
+        /// Builds audio graph and assignes output device
+        /// </summary>
+        /// <returns></returns>
         private async Task BuildAudioGraph()
         {
             AudioGraphSettings settings = new AudioGraphSettings(AudioRenderCategory.GameEffects);
@@ -190,30 +206,46 @@ namespace DTSDemo2.Views
             graph.UnrecoverableErrorOccurred += Graph_UnrecoverableErrorOccurred;
         }
 
+        /// <summary>
+        /// Handles AudioGraph errors (e.g. device change) and attempts to restart playback from same position
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void Graph_UnrecoverableErrorOccurred(AudioGraph sender, AudioGraphUnrecoverableErrorOccurredEventArgs args)
         {
+            TimeSpan CurrentPlayPosition = currentAudioFileInputNode != null ? currentAudioFileInputNode.Position : TimeSpan.Zero;
             sender.Dispose();
             StartButtonEnabled = false;
             StopButtonEnabled = false;
-            await BuildAudioGraph();
+            await LoadAudioFile(CurrentPlayPosition);
         }
 
-        private void stop_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Handles Stop button clicks. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Stop_Click(object sender, RoutedEventArgs e)
         {
-            graph.Stop();
-            StartButtonEnabled = true;
-            StopButtonEnabled = false;
+            Stop();
         }
 
-        private void start_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Handles Start button clicks. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Start_Click(object sender, RoutedEventArgs e)
         {
-            graph.Start();
-            StartButtonEnabled = false;
-            StopButtonEnabled = true;
+            Start();
         }
 
-
-        private async void load_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Handles Load button clicks. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void Load_Click(object sender, RoutedEventArgs e)
         {
             FileOpenPicker openPicker = new FileOpenPicker();
             openPicker.FileTypeFilter.Add(".wav");
@@ -221,20 +253,61 @@ namespace DTSDemo2.Views
             // Link file picker to current window thread.
             ((IInitializeWithWindow)(object)openPicker).Initialize(System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
             soundFile = await openPicker.PickSingleFileAsync();
+            await LoadAudioFile(TimeSpan.Zero);
+        }
 
+        /// <summary>
+        /// Stops playback and resets position to zero.
+        /// </summary>
+        private void Stop()
+        {
+            graph.Stop();
+            currentAudioFileInputNode.Seek(TimeSpan.Zero);
+            StartButtonEnabled = true;
+            StopButtonEnabled = false;
+        }
+
+
+        /// <summary>
+        /// Attempts to start playback. Reloads file and audiograph on failure.
+        /// </summary>
+        private async void Start()
+        {
+            try
+            {
+                graph.Start();
+            }
+            catch (Exception)
+            {
+                await LoadAudioFile(TimeSpan.Zero);
+                try
+                {
+                    graph.Start();
+                }
+                catch
+                {
+                    return;
+                }
+
+            }
+            StartButtonEnabled = false;
+            StopButtonEnabled = true;
+        }
+
+        /// <summary>
+        /// Loads audio file.
+        /// </summary>
+        /// <param name="PlayPosition"></param>
+        /// <returns></returns>
+        private async Task LoadAudioFile(TimeSpan PlayPosition)
+        {
             if (soundFile != null)
             {
                 StartButtonEnabled = false;
                 StopButtonEnabled = false;
 
-                if (graph != null)
-                {
-                    graph.Stop();
-                }
-                else
-                {
-                    await BuildAudioGraph();
-                }
+                await BuildAudioGraph();
+                emitter = new AudioNodeEmitter(AudioNodeEmitterShape.CreateOmnidirectional(), AudioNodeEmitterDecayModel.CreateCustom(0.1, 1), AudioNodeEmitterSettings.None);
                 emitter.Position = new Vector3((float)X, (float)Y, (float)Z);
 
                 if (graph != null)
@@ -248,11 +321,28 @@ namespace DTSDemo2.Views
 
                     if (currentAudioFileInputNode != null)
                     {
-                        currentAudioFileInputNode.Dispose();
+                        try
+                        {
+                            currentAudioFileInputNode.Dispose();
+                        }
+                        catch (ObjectDisposedException)
+                        {
+
+                        }
                     }
                     currentAudioFileInputNode = inCreateResult.FileInputNode;
                     currentAudioFileInputNode.AddOutgoingConnection(deviceOutput);
-                    StartButtonEnabled = true;
+
+                    if (PlayPosition != TimeSpan.Zero)
+                    {
+                        currentAudioFileInputNode.Seek(PlayPosition);
+                        graph.Start();
+                        StopButtonEnabled = true;
+                    }
+                    else
+                    {
+                        StartButtonEnabled = true;
+                    }
                 }
             }
 

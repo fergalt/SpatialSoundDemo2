@@ -46,9 +46,9 @@
             <StackPanel>
                 <TextBlock Foreground="White" x:Name="DeviceInfo"></TextBlock>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="30">
-                    <Button Content="Start" Width="50"  Height="50" Click="start_Click" x:Name="StartButton" IsEnabled="{Binding StartButtonEnabled}" Background="LawnGreen"></Button>
-                    <Button Content="Stop" Width="50"  Height="50" Click="stop_Click" x:Name="StopButton" IsEnabled="{Binding StopButtonEnabled}" Background="Red"></Button>
-                    <Button Content="Load" Width="50"  Height="50" Click="load_Click" x:Name="LoadButton" IsEnabled="True"></Button>
+                    <Button Content="Start" Width="50"  Height="50" Click="Start_Click" x:Name="StartButton" IsEnabled="{Binding StartButtonEnabled}" Background="LawnGreen"></Button>
+                    <Button Content="Stop" Width="50"  Height="50" Click="Stop_Click" x:Name="StopButton" IsEnabled="{Binding StopButtonEnabled}" Background="Red"></Button>
+                    <Button Content="Load" Width="50"  Height="50" Click="Load_Click" x:Name="LoadButton" IsEnabled="True"></Button>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
