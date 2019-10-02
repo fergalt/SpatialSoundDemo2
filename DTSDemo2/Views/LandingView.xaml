@@ -7,36 +7,50 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <DockPanel>
-        <DockPanel DockPanel.Dock="Top">
-            <Border>
-                <StackPanel>
-                    <Label>Top</Label>
-                    <TextBlock Text="{Binding X}"></TextBlock>
-                    <TextBlock Text="{Binding Y}"></TextBlock>
-                    <TextBlock Text="{Binding Z}"></TextBlock>
-                </StackPanel>
-            </Border>
+             d:DesignHeight="500" d:DesignWidth="800">
+    <StackPanel Style="{StaticResource MainPanel}">
+        <DockPanel Style="{StaticResource HeaderPanel}">
+            <Image Style="{StaticResource HeaderLogo}"></Image>
         </DockPanel>
-        <StackPanel Orientation="Horizontal">
-            <Canvas x:Name="Canvas" Width="300" Height="300" Background="DarkGray">
-                <Grid Width="300" Height="300">
-                    <Rectangle x:Name="Listener" Width="40" Height="20" Stroke="White" StrokeThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Separator Margin="3" DockPanel.Dock="Top" Background="#EC9E00"/>
+        <StackPanel Style="{StaticResource BodyPanel}">
+            <Canvas x:Name="Canvas" Style="{StaticResource XYCanvas}">
+                <Rectangle Style="{StaticResource XYOutline}"/>
+                <Grid Style="{StaticResource XYGrid}">
+                    <Rectangle x:Name="Listener" Style="{StaticResource ListenerIcon}">
                     </Rectangle>
+                    <StackPanel Style="{StaticResource CoordinatesStack}">
+                        <TextBlock Style="{StaticResource CoordinatesText}">
+                            X: <Run Text="{Binding X, StringFormat=N2}"></Run>m
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource CoordinatesText}">
+                            Y: <Run Text="{Binding Y, StringFormat=N2}"></Run>m
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource CoordinatesText}">
+                            Z: <Run Text="{Binding Z, StringFormat=N2}"></Run>m
+                        </TextBlock>
+                    </StackPanel>
                 </Grid>
-                <Ellipse x:Name="Emitter" Width="20" Height="20" Fill="White" Canvas.Left="140" Canvas.Top="30">
+
+                <Ellipse x:Name="Emitter" Style="{StaticResource Emitter}">
                     <i:Interaction.Behaviors>
                         <ei:MouseDragElementBehavior ConstrainToParentBounds="true" Dragging="MouseDragElementBehavior_Dragging"/>
                     </i:Interaction.Behaviors>
                 </Ellipse>
 
             </Canvas>
-            <Slider TickFrequency=".1" TickPlacement="Both"  Minimum="-1.5" Maximum="1.5" Orientation="Vertical" Height="250" Value="{Binding Z}"></Slider>
+            <StackPanel VerticalAlignment="Center">
+                <Label Foreground="White" HorizontalAlignment="Center">Height</Label>
+                <Slider Style="{StaticResource HeightSlider}" Value="{Binding Z}" Template="{DynamicResource SliderControlTemplate}" ></Slider>
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Foreground="White" x:Name="DeviceInfo"></TextBlock>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="30">
+                    <Button Content="Start" Width="50"  Height="50" Click="start_Click" x:Name="StartButton" IsEnabled="{Binding StartButtonEnabled}" Background="LawnGreen"></Button>
+                    <Button Content="Stop" Width="50"  Height="50" Click="stop_Click" x:Name="StopButton" IsEnabled="{Binding StopButtonEnabled}" Background="Red"></Button>
+                    <Button Content="Load" Width="50"  Height="50" Click="load_Click" x:Name="LoadButton" IsEnabled="True"></Button>
+                </StackPanel>
+            </StackPanel>
         </StackPanel>
-        <Button Content="Start" Width="50"  Height="50" Click="start_Click" x:Name="StartButton" IsEnabled="{Binding StartButtonEnabled}"></Button>
-        <Button Content="Stop" Width="50"  Height="50" Click="stop_Click" x:Name="StopButton" IsEnabled="{Binding StopButtonEnabled}"></Button>
-        <Button Content="Load" Width="50"  Height="50" Click="load_Click" x:Name="LoadButton" IsEnabled="True"></Button>
-
-    </DockPanel>
+    </StackPanel>
 </UserControl>

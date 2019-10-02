@@ -217,6 +217,8 @@ namespace DTSDemo2.Views
         {
             FileOpenPicker openPicker = new FileOpenPicker();
             openPicker.FileTypeFilter.Add(".wav");
+
+            // Link file picker to current window thread.
             ((IInitializeWithWindow)(object)openPicker).Initialize(System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
             soundFile = await openPicker.PickSingleFileAsync();
 
@@ -235,20 +237,23 @@ namespace DTSDemo2.Views
                 }
                 emitter.Position = new Vector3((float)X, (float)Y, (float)Z);
 
-                CreateAudioFileInputNodeResult inCreateResult = await graph.CreateFileInputNodeAsync(soundFile, emitter);
-                if (inCreateResult.Status != AudioFileNodeCreationStatus.Success)
+                if (graph != null)
                 {
-                    MessageBox.Show(String.Format("Audio file load error: {0}. {1}", inCreateResult.Status.ToString(), inCreateResult.ExtendedError.Message.ToString()), "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
+                    CreateAudioFileInputNodeResult inCreateResult = await graph.CreateFileInputNodeAsync(soundFile, emitter);
+                    if (inCreateResult.Status != AudioFileNodeCreationStatus.Success)
+                    {
+                        MessageBox.Show(String.Format("Audio file load error: {0}. {1}", inCreateResult.Status.ToString(), inCreateResult.ExtendedError.Message.ToString()), "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
 
-                if (currentAudioFileInputNode != null)
-                {
-                    currentAudioFileInputNode.Dispose();
+                    if (currentAudioFileInputNode != null)
+                    {
+                        currentAudioFileInputNode.Dispose();
+                    }
+                    currentAudioFileInputNode = inCreateResult.FileInputNode;
+                    currentAudioFileInputNode.AddOutgoingConnection(deviceOutput);
+                    StartButtonEnabled = true;
                 }
-                currentAudioFileInputNode = inCreateResult.FileInputNode;
-                currentAudioFileInputNode.AddOutgoingConnection(deviceOutput);
-                StartButtonEnabled = true;
             }
 
         }
