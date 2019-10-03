@@ -2,7 +2,7 @@
 
 ![Main window screenshot](readme_images/app_screenshot.png)
 
-Demonstration project for Xperi job application.
+Demonstration project for Xperi job application. WPF desktop app, which utilises the Audiograph / Spatial Sound features from the UWP Windows.Media.Audio namespace. Tested on Windows 10, Version 1903. 
 
 User can load a 48kHz mono wav file, and move the audio emitter's location in three dimensions.
 
