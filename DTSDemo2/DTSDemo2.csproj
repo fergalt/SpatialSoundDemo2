@@ -52,6 +52,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>DtsIconLarge.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -127,8 +130,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\DtsIconLarge.ico" />
+    <Resource Include="DtsIcon.ico" />
+    <Resource Include="DtsIconLarge.ico" />
     <Content Include="Resources\Audio\africa-toto.wav" />
     <Content Include="Resources\Audio\africa-toto_48k.wav" />
+    <Resource Include="Resources\Images\dts-logo-white.png" />
+    <Resource Include="Resources\Images\hpx-icon.png" />
     <Resource Include="Resources\Images\dts-negative_1.eps_.jpg" />
     <Resource Include="Resources\Images\hpx-2-negative.png" />
   </ItemGroup>

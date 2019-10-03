@@ -38,6 +38,10 @@ namespace DTSDemo2.Views
         public bool startButtonEnabled;
         public bool stopButtonEnabled;
 
+        public string errorMessage;
+        public string fileName;
+
+
         private AudioDeviceOutputNode deviceOutput;
         private AudioGraph graph;
         private AudioFileInputNode currentAudioFileInputNode = null;
@@ -51,11 +55,17 @@ namespace DTSDemo2.Views
         {
             InitializeComponent();
             this.DataContext = this;
-            StartButtonEnabled = false;
-            StopButtonEnabled = false;
-            UpdateXYPositions();
+            Loaded += LandingView_Loaded;
         }
 
+        void LandingView_Loaded(object sender, RoutedEventArgs e)
+        {
+            StartButtonEnabled = false;
+            StopButtonEnabled = false;
+            FileName = "";
+            UpdateXYPositions();
+            ClearErrorMessage();
+        }
         /// <summary>
         /// X position in metres
         /// </summary>
@@ -105,6 +115,38 @@ namespace DTSDemo2.Views
         }
 
         /// <summary>
+        /// Error Message
+        /// </summary>
+        public string ErrorMessage
+        {
+            get
+            {
+                return errorMessage;
+            }
+            set
+            {
+                errorMessage = value;
+                OnPropertyChanged("ErrorMessage");
+            }
+        }
+
+        /// <summary>
+        /// Name of the audio file
+        /// </summary>
+        public string FileName
+        {
+            get
+            {
+                return fileName;
+            }
+            set
+            {
+                fileName = value;
+                OnPropertyChanged("FileName");
+            }
+        }
+
+        /// <summary>
         /// Start Button Enabled flag
         /// </summary>
         public bool StartButtonEnabled
@@ -149,7 +191,7 @@ namespace DTSDemo2.Views
                 handler(this, new PropertyChangedEventArgs(name));
                 if (emitter != null)
                 {
-                    emitter.Position = new Vector3((float)X, (float)Z, (float)Y);
+                    emitter.Position = new Vector3((float)X, (float)Z, (float)-Y);
                 }
             }
         }
@@ -172,7 +214,7 @@ namespace DTSDemo2.Views
             Point PxPosition = Emitter.TranslatePoint(new Point(Emitter.Width / 2 - Listener.Width / 2, Emitter.Height / 2 - Listener.Height / 2), Listener);
             Point MetricPosition = new Point(PxPosition.X / Canvas.Width, PxPosition.Y / Canvas.Height);
             X = MetricPosition.X * 3;
-            Y = MetricPosition.Y * 3;
+            Y = -MetricPosition.Y * 3;
         }
 
 
@@ -191,16 +233,14 @@ namespace DTSDemo2.Views
 
             if (result.Status != AudioGraphCreationStatus.Success)
             {
-                MessageBox.Show(String.Format("AudioGraph creation error: {0}", result.Status.ToString()), "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                throw (new AudioGraphCreationException(String.Format("AudioGraph creation error: {0}", result.Status.ToString())));
             }
             graph = result.Graph;
             CreateAudioDeviceOutputNodeResult deviceResult = await graph.CreateDeviceOutputNodeAsync();
 
             if (deviceResult.Status != AudioDeviceNodeCreationStatus.Success)
             {
-                MessageBox.Show(String.Format("Audio device error: {0}", deviceResult.Status.ToString()), "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                throw (new AudioGraphCreationException(String.Format("Audio device error: {0}", result.Status.ToString())));
             }
             deviceOutput = deviceResult.DeviceOutputNode;
             graph.UnrecoverableErrorOccurred += Graph_UnrecoverableErrorOccurred;
@@ -213,6 +253,7 @@ namespace DTSDemo2.Views
         /// <param name="args"></param>
         private async void Graph_UnrecoverableErrorOccurred(AudioGraph sender, AudioGraphUnrecoverableErrorOccurredEventArgs args)
         {
+            Console.WriteLine(String.Format("Unrecoverable Error Occurred, restaring: {0}", args.Error.ToString()));
             TimeSpan CurrentPlayPosition = currentAudioFileInputNode != null ? currentAudioFileInputNode.Position : TimeSpan.Zero;
             sender.Dispose();
             StartButtonEnabled = false;
@@ -277,18 +318,20 @@ namespace DTSDemo2.Views
             {
                 graph.Start();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(String.Format("Playback failed, restarting: {0}", ex.ToString()));
                 await LoadAudioFile(TimeSpan.Zero);
                 try
                 {
                     graph.Start();
                 }
-                catch
+                catch (Exception ex2)
                 {
+                    Console.WriteLine(String.Format("Playback failed, aborting: {0}", ex2.ToString()));
+                    ShowErrorMessage(String.Format("Playback failed: {0}", ex2.ToString()));
                     return;
                 }
-
             }
             StartButtonEnabled = false;
             StopButtonEnabled = true;
@@ -303,49 +346,92 @@ namespace DTSDemo2.Views
         {
             if (soundFile != null)
             {
+                ClearErrorMessage();
                 StartButtonEnabled = false;
                 StopButtonEnabled = false;
+                FileName = "";
 
-                await BuildAudioGraph();
-                emitter = new AudioNodeEmitter(AudioNodeEmitterShape.CreateOmnidirectional(), AudioNodeEmitterDecayModel.CreateCustom(0.1, 1), AudioNodeEmitterSettings.None);
-                emitter.Position = new Vector3((float)X, (float)Y, (float)Z);
-
-                if (graph != null)
+                try
                 {
-                    CreateAudioFileInputNodeResult inCreateResult = await graph.CreateFileInputNodeAsync(soundFile, emitter);
-                    if (inCreateResult.Status != AudioFileNodeCreationStatus.Success)
-                    {
-                        MessageBox.Show(String.Format("Audio file load error: {0}. {1}", inCreateResult.Status.ToString(), inCreateResult.ExtendedError.Message.ToString()), "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                    await BuildAudioGraph();
+                }
+                catch (Exception ex)
+                {
+                    ShowErrorMessage(ex.Message);
+                    return;
+                }
+                emitter = new AudioNodeEmitter(AudioNodeEmitterShape.CreateOmnidirectional(), AudioNodeEmitterDecayModel.CreateCustom(0.1, 1), AudioNodeEmitterSettings.None);
+                emitter.Position = new Vector3((float)X, (float)Z, (float)-Y);
+
+                CreateAudioFileInputNodeResult inCreateResult = await graph.CreateFileInputNodeAsync(soundFile, emitter);
+                
+                switch (inCreateResult.Status)
+                {
+                    case AudioFileNodeCreationStatus.FormatNotSupported:
+                    case AudioFileNodeCreationStatus.InvalidFileType:
+                        ShowErrorMessage(String.Format("Could not load {0}. \n\nPlease choose a different file - For Windows Spatial Sound processing, audio files must be Mono 48kHz PCM Wav.", soundFile.Name));
                         return;
-                    }
+                    case AudioFileNodeCreationStatus.UnknownFailure:
+                    case AudioFileNodeCreationStatus.FileNotFound:
+                        ShowErrorMessage(String.Format("Audio file load error: {0}", inCreateResult.Status.ToString()));
+                        return;
+                }
 
-                    if (currentAudioFileInputNode != null)
+           
+                //Dispose of previous input node.
+                if (currentAudioFileInputNode != null)
+                {
+                    try
                     {
-                        try
-                        {
-                            currentAudioFileInputNode.Dispose();
-                        }
-                        catch (ObjectDisposedException)
-                        {
-
-                        }
+                        currentAudioFileInputNode.Dispose();
                     }
-                    currentAudioFileInputNode = inCreateResult.FileInputNode;
-                    currentAudioFileInputNode.AddOutgoingConnection(deviceOutput);
-
-                    if (PlayPosition != TimeSpan.Zero)
+                    catch (ObjectDisposedException)
                     {
-                        currentAudioFileInputNode.Seek(PlayPosition);
-                        graph.Start();
-                        StopButtonEnabled = true;
-                    }
-                    else
-                    {
-                        StartButtonEnabled = true;
+                        //Do nothing
                     }
                 }
-            }
+                currentAudioFileInputNode = inCreateResult.FileInputNode;
+                currentAudioFileInputNode.AddOutgoingConnection(deviceOutput);
+                FileName = currentAudioFileInputNode.SourceFile.Name;
 
+                if (PlayPosition != TimeSpan.Zero)
+                {
+                    currentAudioFileInputNode.Seek(PlayPosition);
+                    graph.Start();
+                    StopButtonEnabled = true;
+                }
+                else
+                {
+                    StartButtonEnabled = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets error message to appear red textblock
+        /// </summary>
+        /// <param name="message"></param>
+        private void ShowErrorMessage(string message)
+        {
+            ErrorMessage = message;
+        }
+
+        /// <summary>
+        /// Clears the error message 
+        /// </summary>
+        private void ClearErrorMessage()
+        {
+            ErrorMessage = "";
+        }
+
+        /// <summary>
+        /// Exception thrown if audiograph fails to build
+        /// </summary>
+        public class AudioGraphCreationException : Exception
+        {
+            public AudioGraphCreationException(string message) : base(message)
+            {
+            }
         }
     }
 }

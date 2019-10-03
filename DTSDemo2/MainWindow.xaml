@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DTSDemo2"
         xmlns:views="clr-namespace:DTSDemo2.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Windows Spatial Sound demonstration" Height="533" Width="812">
     <Grid>
         <views:LandingView></views:LandingView>
     </Grid>

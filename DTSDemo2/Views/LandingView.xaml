@@ -7,12 +7,13 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="800">
+             d:DesignHeight="533" d:DesignWidth="812">
     <StackPanel Style="{StaticResource MainPanel}">
         <DockPanel Style="{StaticResource HeaderPanel}">
-            <Image Style="{StaticResource HeaderLogo}"></Image>
+            <Image Style="{StaticResource HeaderLogo}"/>
         </DockPanel>
         <Separator Margin="3" DockPanel.Dock="Top" Background="#EC9E00"/>
+        <TextBlock Style="{StaticResource HeaderText}" Text="Windows Spatial Sound demonstration"/>
         <StackPanel Style="{StaticResource BodyPanel}">
             <Canvas x:Name="Canvas" Style="{StaticResource XYCanvas}">
                 <Rectangle Style="{StaticResource XYOutline}"/>
@@ -40,17 +41,23 @@
 
             </Canvas>
             <StackPanel VerticalAlignment="Center">
-                <Label Foreground="White" HorizontalAlignment="Center">Height</Label>
-                <Slider Style="{StaticResource HeightSlider}" Value="{Binding Z}" Template="{DynamicResource SliderControlTemplate}" ></Slider>
+                <Label Foreground="White" HorizontalAlignment="Center" Style="{StaticResource HeightLabel}">Height</Label>
+                <Slider Style="{StaticResource HeightSlider}" Value="{Binding Z}" Template="{DynamicResource SliderControlTemplate}"/>
             </StackPanel>
-            <StackPanel>
-                <TextBlock Foreground="White" x:Name="DeviceInfo"></TextBlock>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="30">
-                    <Button Content="Start" Width="50"  Height="50" Click="Start_Click" x:Name="StartButton" IsEnabled="{Binding StartButtonEnabled}" Background="LawnGreen"></Button>
-                    <Button Content="Stop" Width="50"  Height="50" Click="Stop_Click" x:Name="StopButton" IsEnabled="{Binding StopButtonEnabled}" Background="Red"></Button>
-                    <Button Content="Load" Width="50"  Height="50" Click="Load_Click" x:Name="LoadButton" IsEnabled="True"></Button>
+            <DockPanel Width="360">
+                <TextBlock Style="{StaticResource InfoText}" Text="Load a single-channel 48kHz wav file, and press play"/>
+                <TextBlock Style="{StaticResource Error}" Text="{Binding ErrorMessage}"/>
+                <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Margin="30">
+                    <DockPanel>
+                        <Button Style="{StaticResource PlayButton}" Click="Start_Click" x:Name="StartButton" IsEnabled="{Binding StartButtonEnabled}"/>
+                        <Button Style="{StaticResource StopButton}" Click="Stop_Click" x:Name="StopButton" IsEnabled="{Binding StopButtonEnabled}"/>
+                        <Viewbox StretchDirection="DownOnly">
+                            <TextBlock Margin="5" Style="{StaticResource FileName}" Text="{Binding FileName}"/>
+                        </Viewbox>
+                    </DockPanel>
+                    <Button Style="{StaticResource LoadButton}" Content="Load audio file"  Click="Load_Click" x:Name="LoadButton" IsEnabled="True"/>
                 </StackPanel>
-            </StackPanel>
+            </DockPanel>
         </StackPanel>
     </StackPanel>
 </UserControl>
