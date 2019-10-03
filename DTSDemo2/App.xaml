@@ -33,6 +33,16 @@
                 <Setter Property="TextWrapping" Value="Wrap"/>
                 <Setter Property="LineStackingStrategy" Value="MaxHeight"/>
             </Style>
+            <Style TargetType="TextBlock" x:Key="AboutText">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontWeight" Value="Normal"/>
+                <Setter Property="FontSize" Value="10"/>
+                <Setter Property="TextTrimming" Value="None"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="DockPanel.Dock" Value="Right"/>
+                <Setter Property="TextAlignment" Value="Right"/>
+            </Style>
             <!-- Body -->
             <Style TargetType="StackPanel" x:Key="BodyPanel">
                 <Setter Property="DockPanel.Dock" Value="Left"/>
