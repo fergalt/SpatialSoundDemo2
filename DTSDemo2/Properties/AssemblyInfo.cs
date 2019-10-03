@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DTSDemo2")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Fergal Toohey - DTSDemo")]
+[assembly: AssemblyDescription("Portfolio project, demonstrating Windows Spatial Sound and WPF")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DTSDemo2")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyProduct("DTSDemo")]
+[assembly: AssemblyCopyright("Copyright ©  2019 Fergal Toohey")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

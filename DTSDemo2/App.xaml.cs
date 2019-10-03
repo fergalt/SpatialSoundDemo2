@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) 2019 Fergal Toohey
+
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;

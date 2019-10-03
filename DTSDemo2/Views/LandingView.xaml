@@ -11,6 +11,7 @@
     <StackPanel Style="{StaticResource MainPanel}">
         <DockPanel Style="{StaticResource HeaderPanel}">
             <Image Style="{StaticResource HeaderLogo}"/>
+            <TextBlock Style="{StaticResource AboutText}">Copyright ©  2019 Fergal Toohey - Demo for Xperi job application</TextBlock>
         </DockPanel>
         <Separator Margin="3" DockPanel.Dock="Top" Background="#EC9E00"/>
         <TextBlock Style="{StaticResource HeaderText}" Text="Windows Spatial Sound demonstration"/>
