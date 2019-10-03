@@ -11,7 +11,7 @@ using System.Windows;
 [assembly: AssemblyDescription("Portfolio project, demonstrating Windows Spatial Sound and WPF")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DTSDemo")]
+[assembly: AssemblyProduct("DTSDemo2")]
 [assembly: AssemblyCopyright("Copyright ©  2019 Fergal Toohey")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
