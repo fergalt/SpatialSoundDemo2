@@ -1,5 +1,4 @@
-# SpatialSoundDemo2
-Windows Spatial Sound and WPF demonstration.
+# Windows Spatial Sound and WPF demonstration.
 
 Demonstration project for Xperi job application.
 
