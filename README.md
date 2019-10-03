@@ -1,6 +1,5 @@
 # Windows Spatial Sound and WPF demonstration.
 
-![Main window screenshot](readme_images/app_screenshot.png)
 
 # Usage
 Project can be run from source by cloning/downloading repository and opening solution in Visual Studio.
@@ -8,7 +7,7 @@ Project can be run from source by cloning/downloading repository and opening sol
 Alternatively, the application binary can be installed from the release page https://github.com/fergalt/SpatialSoundDemo2/releases
 
 # About
-Demonstration project: not for public use. WPF desktop app, which utilises the Audiograph / Spatial Sound features from the UWP Windows.Media.Audio namespace. Tested on Windows 10, Version 1903. 
+Demonstration project: not intended for distribution. WPF desktop app, which utilises the Audiograph / Spatial Sound features from the UWP Windows.Media.Audio namespace. Tested on Windows 10, Version 1903. 
 
 User can load a 48kHz mono wav file, and move the audio emitter's location in three dimensions.
 
