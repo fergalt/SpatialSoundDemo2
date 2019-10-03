@@ -264,6 +264,15 @@ namespace DTSDemo2.Views
         }
 
         /// <summary>
+        /// Handles competion of audio file playback.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void CurrentAudioFileInputNode_FileCompleted(AudioFileInputNode sender, object args)
+        {
+            Stop();
+        }
+        /// <summary>
         /// Handles Stop button clicks. 
         /// </summary>
         /// <param name="sender"></param>
@@ -394,6 +403,7 @@ namespace DTSDemo2.Views
                 }
                 currentAudioFileInputNode = inCreateResult.FileInputNode;
                 currentAudioFileInputNode.AddOutgoingConnection(deviceOutput);
+                currentAudioFileInputNode.FileCompleted += CurrentAudioFileInputNode_FileCompleted;
                 FileName = currentAudioFileInputNode.SourceFile.Name;
 
                 if (PlayPosition != TimeSpan.Zero)
