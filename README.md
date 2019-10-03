@@ -8,7 +8,7 @@ Project can be run from source by cloning/downloading repository and opening sol
 Alternatively, the application binary can be installed from the release page https://github.com/fergalt/SpatialSoundDemo2/releases
 
 # About
-Demonstration project for Xperi job application. WPF desktop app, which utilises the Audiograph / Spatial Sound features from the UWP Windows.Media.Audio namespace. Tested on Windows 10, Version 1903. 
+Demonstration project: not for public use. WPF desktop app, which utilises the Audiograph / Spatial Sound features from the UWP Windows.Media.Audio namespace. Tested on Windows 10, Version 1903. 
 
 User can load a 48kHz mono wav file, and move the audio emitter's location in three dimensions.
 
@@ -19,5 +19,3 @@ To obtain 3D spatial sound, enable DTS Headphone:X for your selected audio devic
 
 ![Main window screenshot](readme_images/audio_settings.png)
 
-# Contact 
-Fergal Toohey +353-87-3327457
