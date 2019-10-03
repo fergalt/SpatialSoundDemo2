@@ -1,5 +1,7 @@
 # Windows Spatial Sound and WPF demonstration.
 ![Main window screenshot](readme_images/app_screenshot.png)
+(Copyright: Not for distribution. Application is for portfolio demonstration purposes only, and is not affililated with DTS / Xperi.)
+
 # Usage
 Project can be run from source by cloning/downloading repository and opening solution in Visual Studio.
 
@@ -15,8 +17,6 @@ For convenience, a 48kHz mono wav file can be found in the Resources/Audio folde
 # Drivers
 To obtain 3D spatial sound, enable DTS Headphone:X for your selected audio device:
 
-![Main window screenshot](readme_images/audio_settings.png)
-
-Copyright: Not for distribution. Application is for portfolio demonstration purposes only, and is not affililated with DTS / Xperi. 
+![Audio settings screenshot](readme_images/audio_settings.png)
 
 
